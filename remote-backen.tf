@@ -1,9 +1,9 @@
 terraform {
   backend "s3" {
-    bucket         = "composition-124"
+    bucket         = "demobucket-167"
     key            = "demo/terraform.tfstate"
     region         = "ap-south-1"
-    dynamodb_table = "terraform-module" 
+    dynamodb_table = "demotable" 
     encrypt        = true
   }
 }
