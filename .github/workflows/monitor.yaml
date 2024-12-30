@@ -25,7 +25,7 @@ jobs:
       - name: Simulate Workload
         run: |
           echo "Running workload..."
-          sleep 30
+          sleep 10
 
       # Step 4: Capture End Time
       - name: Capture End Time
@@ -37,6 +37,6 @@ jobs:
         env:
           START_TIME: ${{ env.START_TIME }}
           END_TIME: ${{ env.END_TIME }}
-          RUN_DURATION: $(( env.END_TIME - env.START_TIME ))
+          RUN_DURATION: $((END_TIME - START_TIME)) # Calculate duration in seconds
         run: |
-          curl -X POST --data "github_runner_duration_seconds $RUN_DURATION" https://945a-49-43-241-70.ngrok-free.app/metrics/job/github_runner
+          curl -X POST --data "github_runner_duration_seconds{job=\"github_runner\", status=\"${{ job.status }}\"} $RUN_DURATION" https://c5f4-49-43-241-70.ngrok-free.app/metrics/job/github_runner
