@@ -39,4 +39,4 @@ jobs:
           END_TIME: ${{ env.END_TIME }}
           RUN_DURATION: $(( env.END_TIME - env.START_TIME ))
         run: |
-          curl -X POST --data "github_runner_duration_seconds $RUN_DURATION" https://aaf1-49-43-241-70.ngrok-free.app/metrics/job/github_runner
+          curl -X POST --data "github_runner_duration_seconds $RUN_DURATION" https://945a-49-43-241-70.ngrok-free.app/metrics/job/github_runner
