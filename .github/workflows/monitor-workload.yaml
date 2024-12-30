@@ -1,0 +1,48 @@
+name: Monitor GitHub-Runner Workflow
+
+on:
+  workflow_run:
+    workflows:
+      - Terraform Workflow with OIDC, SNS Notification, and Logs Upload to s3
+    types:
+      - completed
+
+jobs:
+  collect-metrics:
+    runs-on: ubuntu-latest
+
+    steps:
+      # Step 1: Checkout Code
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+      # Step 2: Install stress-ng for Load Simulation
+      - name: Install stress-ng
+        run: sudo apt-get update && sudo apt-get install -y stress-ng
+
+      # Step 3: Capture Start Time
+      - name: Capture Start Time
+        id: start_time
+        run: echo "START_TIME=$(date +%s)" >> $GITHUB_ENV
+
+      # Step 4: Simulate Workload with Load
+      - name: Simulate Workload with Load
+        run: |
+          echo "Simulating heavy workload..."
+          # Adding CPU load for 30 seconds to simulate processing time
+          stress-ng --cpu 2 --timeout 30s --verbose
+          sleep 5  # Adding a brief pause to represent some other work
+      
+      # Step 5: Capture End Time
+      - name: Capture End Time
+        id: end_time
+        run: echo "END_TIME=$(date +%s)" >> $GITHUB_ENV
+
+      # Step 6: Calculate Metrics and Push to Prometheus
+      - name: Push Metrics to Prometheus
+        env:
+          START_TIME: ${{ env.START_TIME }}
+          END_TIME: ${{ env.END_TIME }}
+          RUN_DURATION: $(( env.END_TIME - env.START_TIME ))
+        run: |
+          curl -X POST --data "github_runner_duration_seconds $RUN_DURATION" http://<pushgateway-url>:9091/metrics/job/github_runner
