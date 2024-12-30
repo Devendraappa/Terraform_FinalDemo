@@ -1,0 +1,42 @@
+name: Monitor GitHub-Runner Workflow
+
+on:
+  workflow_run:
+    workflows:
+      - AnyWorkflowName
+    types:
+      - completed
+
+jobs:
+  collect-metrics:
+    runs-on: ubuntu-latest
+
+    steps:
+      # Step 1: Checkout Code
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+      # Step 2: Capture Start Time
+      - name: Capture Start Time
+        id: start_time
+        run: echo "START_TIME=$(date +%s)" >> $GITHUB_ENV
+
+      # Step 3: Simulate Workload
+      - name: Simulate Workload
+        run: |
+          echo "Running workload..."
+          sleep 30
+
+      # Step 4: Capture End Time
+      - name: Capture End Time
+        id: end_time
+        run: echo "END_TIME=$(date +%s)" >> $GITHUB_ENV
+
+      # Step 5: Calculate Metrics and Push to Prometheus
+      - name: Push Metrics to Prometheus
+        env:
+          START_TIME: ${{ env.START_TIME }}
+          END_TIME: ${{ env.END_TIME }}
+          RUN_DURATION: $(( env.END_TIME - env.START_TIME ))
+        run: |
+          curl -X POST --data "github_runner_duration_seconds $RUN_DURATION" https://aaf1-49-43-241-70.ngrok-free.app/metrics/job/github_runner
