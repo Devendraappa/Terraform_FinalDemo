@@ -37,7 +37,7 @@ jobs:
         env:
           START_TIME: ${{ env.START_TIME }}
           END_TIME: ${{ env.END_TIME }}
-          RUN_DURATION: $((END_TIME - START_TIME)) # Calculate duration in seconds
         run: |
+          RUN_DURATION=$((END_TIME - START_TIME)) # Calculate duration in seconds
           echo "RUN_DURATION=${RUN_DURATION}" # Debugging output
           curl -X POST --data "github_runner_duration_seconds{job=\"github_runner\", status=\"${{ job.status }}\"} ${RUN_DURATION}" https://c5f4-49-43-241-70.ngrok-free.app/metrics
