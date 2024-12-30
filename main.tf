@@ -4,7 +4,7 @@ provider "aws" {
 
 resource "aws_s3_bucket" "example" {
   bucket = "${var.bucket_name_prefix}-${random_id.id.hex}"
-  aws_s3_bucket_acl = "private"
+  acl = "private"
 }
 
 resource "random_id" "id" {
